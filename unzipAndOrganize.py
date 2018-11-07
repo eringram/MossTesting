@@ -76,7 +76,21 @@ def moveFiles(root):
             if os.path.isfile(deletePath) and not deletePath.endswith(".java"):
                 os.remove(deletePath)
 
-def combineWithKnownRepos(mossDir, knownRepos):
+def combineWithKnownRepos(learnDir, mossDir, knownRepos):
+    os.mkdir(mossDir)
+    # Move all of the current student directories over to the moss dir
+    for userdir in sorted(os.listdir(learnDir)):
+        srcpath = learnDir + "/" + userdir
+        dstpath = mossDir + "/" + userdir
+        if os.path.isdir(srcpath):
+            shutil.move(srcpath, dstpath)
+
+    # Move all of the known cheating directories over to the moss dir
+    for cheater in sorted(os.listdir(knownRepos)):
+        srcpath = knownRepos + "/" + cheater
+        dstpath = mossDir + "/" + cheater
+        if os.path.isdir(srcpath):
+            shutil.move(srcpath, dstpath)
     
 
 if __name__ == "__main__":
@@ -85,5 +99,4 @@ if __name__ == "__main__":
     knownRepos = "knownRepos"
     directories = extractAndRenameZips(learnZipRoot)
     moveFiles(learnZipRoot)
-    combineWithKnownRepos(mossDir, knownRepos)
-
+    combineWithKnownRepos(learnZipRoot, mossDir, knownRepos)

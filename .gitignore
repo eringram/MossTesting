@@ -1,5 +1,7 @@
 knownRepos/
 zipsFromLearn/
+forMoss/
+*.zip
 moss
 *.swp
 .DS_*
