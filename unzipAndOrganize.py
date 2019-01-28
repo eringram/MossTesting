@@ -53,15 +53,26 @@ def extractAndRenameZips(zipFileRoot):
 def moveFiles(root):
     # Get a list of all subdirectories (i.e. all users)
     subdirs = filter(os.path.isdir, [os.path.join(root, path) for path in os.listdir(root)])
-        
+
+    # Try to remove the common files before pulling out the src files
+    for common in subdirs:
+        for root, dirs, files in os.walk(common, topdown=False):
+            for folder in dirs:
+                if folder.endswith("ommon"):
+                    commonPath = os.path.join(root, folder)
+                    shutil.rmtree(commonPath)
+                if folder.endswith("OSX"):
+                    osxPath = os.path.join(root, folder)
+                    shutil.rmtree(osxPath)
+
     # For each submission, find all of the java files and move them to the userdir root
     for userdir in subdirs:
         for root, dirs, files in os.walk(userdir, topdown=False):
             for srcfile in files:
                 # Make sure to only move the java source files
-                if srcfile.endswith(".java"):
+                if srcfile.endswith(".js") or srcfile.endswith(".html"):
                     try:
-                        shutil.move(os.path.join(root, srcfile), userdir)
+                        shutil.move(os.path.join(root, srcfile), os.path.join(userdir, srcfile))
                     except OSError:
                         pass
 
@@ -73,7 +84,7 @@ def moveFiles(root):
             if os.path.isdir(deletePath):
                 shutil.rmtree(deletePath)
             # Delete any non java files. I don't want class and jars getting sent to moss
-            if os.path.isfile(deletePath) and not deletePath.endswith(".java"):
+            if os.path.isfile(deletePath) and not (deletePath.endswith(".js") or deletePath.endswith(".html")):
                 os.remove(deletePath)
 
 def combineWithKnownRepos(learnDir, mossDir, knownRepos):
@@ -95,8 +106,8 @@ def combineWithKnownRepos(learnDir, mossDir, knownRepos):
 
 if __name__ == "__main__":
     learnZipRoot = "zipsFromLearn"
-    mossDir = "forMoss"
-    knownRepos = "knownRepos"
+    #mossDir = "forMoss"
+    #knownRepos = "knownRepos"
     directories = extractAndRenameZips(learnZipRoot)
     moveFiles(learnZipRoot)
-    combineWithKnownRepos(learnZipRoot, mossDir, knownRepos)
+    #combineWithKnownRepos(learnZipRoot, mossDir, knownRepos)
