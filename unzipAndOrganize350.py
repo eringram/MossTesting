@@ -62,7 +62,7 @@ def moveFiles(root):
                 if srcfile.endswith(".java"):
                     try:
                         shutil.move(os.path.join(root, srcfile), userdir)
-                    except OSError:
+                    except Exception:
                         pass
 
     # Time to go through and remove anything that is a directory or not a java file
