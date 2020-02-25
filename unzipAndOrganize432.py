@@ -17,7 +17,7 @@ def extractAndRenameZips(zipFileRoot):
     for zippy in sorted(os.listdir(os.getcwd())):
         # Rar files will be responsible for the eventual death of the human race
         if not zippy.endswith(".zip") and not zippy.endswith("tar.gz"):
-            print("Some asshole probably submitted a rar file. Sick!!!!!!!!")
+            print("Some asshole probably submitted a rar file")
             print("Here's the file: " + zippy)
             continue
 
@@ -33,16 +33,25 @@ def extractAndRenameZips(zipFileRoot):
 
         # See the ... above, double check that they're all zip files
         if zippy.endswith(".zip"):
-            theZip = zipfile.ZipFile(zippy, 'r')
-            theZip.extractall(unzippedDirName)
-            theZip.close()
-            os.remove(zippy)
+            try:
+                theZip = zipfile.ZipFile(zippy, 'r')
+                theZip.extractall(unzippedDirName)
+                theZip.close()
+                os.remove(zippy)
+            except: 
+                print("Failed to unzip: " + zippy)
+                pass
         
         # Not supposed to use tar files, but I'm not about to fault a *nix user
         if zippy.endswith(".tar.gz"):
-            tar = tarfile.open(zippy, "r:gz")
-            tar.extractall(unzippedDirName)
-            tar.close()
+            try:
+                tar = tarfile.open(zippy, "r:gz")
+                tar.extractall(unzippedDirName)
+                tar.close()
+                os.remove(zippy)
+            except:
+                print("Failed to untar: " + zippy)
+                pass
 
     # Move back out to the root dir
     os.chdir("..")
@@ -74,6 +83,7 @@ def moveFiles(root):
                     try:
                         shutil.move(os.path.join(root, srcfile), os.path.join(userdir, srcfile))
                     except OSError:
+                        print("Failed to move: " + srcfile)
                         pass
 
     # Time to go through and remove anything that is a directory or not a java file
@@ -83,31 +93,14 @@ def moveFiles(root):
             # Delete any directories, all java sources should have already been pulled out
             if os.path.isdir(deletePath):
                 shutil.rmtree(deletePath)
-            # Delete any non java files. I don't want class and jars getting sent to moss
+            # Delete any non js files. I don't want class and jars getting sent to moss
             if os.path.isfile(deletePath) and not (deletePath.endswith(".js") or deletePath.endswith(".html")):
                 os.remove(deletePath)
 
-def combineWithKnownRepos(learnDir, mossDir, knownRepos):
-    os.mkdir(mossDir)
-    # Move all of the current student directories over to the moss dir
-    for userdir in sorted(os.listdir(learnDir)):
-        srcpath = learnDir + "/" + userdir
-        dstpath = mossDir + "/" + userdir
-        if os.path.isdir(srcpath):
-            shutil.move(srcpath, dstpath)
-
-    # Move all of the known cheating directories over to the moss dir
-    for cheater in sorted(os.listdir(knownRepos)):
-        srcpath = knownRepos + "/" + cheater
-        dstpath = mossDir + "/" + cheater
-        if os.path.isdir(srcpath):
-            shutil.move(srcpath, dstpath)
-    
-
 if __name__ == "__main__":
     learnZipRoot = "zipsFromLearn"
-    #mossDir = "forMoss"
-    #knownRepos = "knownRepos"
     directories = extractAndRenameZips(learnZipRoot)
+    #NOTE:  For some reason moveFiles does not function properly with Python 3. I have not
+    #NOTE:  taken the time to figure out why. 
     moveFiles(learnZipRoot)
-    #combineWithKnownRepos(learnZipRoot, mossDir, knownRepos)
+
