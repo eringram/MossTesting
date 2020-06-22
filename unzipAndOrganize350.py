@@ -77,7 +77,10 @@ def moveFiles(root):
                 os.remove(deletePath)
 
 def combineWithKnownRepos(learnDir, mossDir, knownRepos):
-    os.mkdir(mossDir)
+    try:
+        os.makedirs(mossDir)
+    except OSError as e:
+        pass
     # Move all of the current student directories over to the moss dir
     for userdir in sorted(os.listdir(learnDir)):
         srcpath = learnDir + "/" + userdir
