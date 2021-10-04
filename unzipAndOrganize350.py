@@ -28,6 +28,9 @@ def extractAndRenameZips(zipFileRoot):
 
         # Figure out the username so we know what to call the extracted directory
         unzippedDirNamePart1 = zippy.split('_', 1)[-1]
+        # Use the below for the coding labs, has an extra _ in the beginning
+        #unzippedDirNamePart1 = zippy.split('_', 2)[-1]
+        print(unzippedDirNamePart1)
         unzippedDirName = unzippedDirNamePart1.split('_', 1)[0]
         directories.append(unzippedDirName)
 
@@ -102,4 +105,4 @@ if __name__ == "__main__":
     knownRepos = "knownRepos"
     directories = extractAndRenameZips(learnZipRoot)
     moveFiles(learnZipRoot)
-    combineWithKnownRepos(learnZipRoot, mossDir, knownRepos)
+    #combineWithKnownRepos(learnZipRoot, mossDir, knownRepos)
